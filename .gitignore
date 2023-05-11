@@ -1,0 +1,27 @@
+# Directories
+/dist
+/node_modules
+/src/firestore/firebase.config.ts
+
+# Logs
+logs
+*.log
+
+# Environment files
+.env
+.env.local
+.env.*.local
+.env.test
+.env.production
+
+# Compiled output
+*.js
+*.map
+*.d.ts
+*.js.map
+*.js.map.gz
+*.tsbuildinfo
+
+# Dependency directories
+pids
+public
