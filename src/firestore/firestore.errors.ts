@@ -8,6 +8,6 @@ export class FirestoreError extends Error {
 
 export class DocNotFound extends FirestoreError {
     constructor(id: string) {
-        super(`Document with id ${id} not found`)
+        super(`Document with id ${id} was not found`)
     }
 }  

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { NuclearRunEntity } from 'src/shared';
 import { NuclearApiResponse } from './nuclear-run-api-shared';
-import { NuclearErrorMap, NuclearErrors } from './nuclear-run-api.errors';
+import { RunNotFounException } from './nuclear-run-api.errors';
 
 @Injectable()
 export class NuclearRunApiService {
@@ -11,16 +11,18 @@ export class NuclearRunApiService {
   async getCurrentRun(steamId: string, key: string): Promise<NuclearRunEntity> {
     const response = await this.callNuclearApiAndGetResponse(steamId, key);
     if (!response?.current) {
-      throw NuclearErrorMap.get(NuclearErrors.NoRunFound);
+      throw new RunNotFounException()
     }
     return response.current.toNuclearRunEntity();
   }
   
   async getPreviousRun(steamId: string, key: string): Promise<NuclearRunEntity> {
     const response = await this.callNuclearApiAndGetResponse(steamId, key);
+
     if (!response?.previous) {
-      throw NuclearErrorMap.get(NuclearErrors.NoRunFound);
+      throw new RunNotFounException()
     }
+
     return response.previous.toNuclearRunEntity();
   }
   

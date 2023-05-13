@@ -1,15 +1,25 @@
-export enum NuclearErrors {
-    NoRunFound,
-    NoKeyProvided,
-    NoSteamIdProvided,
-    NoRunIdProvided,
-    RunAlreadyExists
+import { BadRequestException, HttpException, HttpStatus, NotFoundException } from "@nestjs/common"
+
+export class RunNotFounException extends NotFoundException {
+    constructor() {
+        super('Run was not found')
+    }
 }
 
-export const NuclearErrorMap = new Map<NuclearErrors, Error>([
-    [NuclearErrors.NoKeyProvided, new Error('No key was provided')],
-    [NuclearErrors.NoRunFound, new Error('Run was not found')],
-    [NuclearErrors.NoSteamIdProvided, new Error('No steam id was provided')],
-    [NuclearErrors.NoRunIdProvided, new Error('No run id was provided')],
-    [NuclearErrors.RunAlreadyExists, new Error('Run already exists')]
-])
+export class RunConflictException extends HttpException {
+    constructor() {
+        super('Run already exists', HttpStatus.CONFLICT)
+    }
+}
+
+export class SteamIdNotProvidedException extends BadRequestException {
+    constructor() {
+        super('Steam id was not provided.')
+    }
+}
+
+export class KeyNotProvidedException extends BadRequestException {
+    constructor() {
+        super('Key was not provided.')
+    }
+}
