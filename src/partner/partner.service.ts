@@ -4,14 +4,15 @@ import { getPartnerCollectionPath } from 'src/firestore/firestorePaths';
 import * as crypto from 'crypto';
 
 export interface IPartnerService {
-    getPartners(): Partner[]
+    //getPartners(): Partner[]
     checkSecretKeyForPartner(partnerId: string, secretKeyProvided: string): boolean
 }
 
 export class Partner {
     constructor(
         public partnerId: string,
-        public secretKey: string
+        public secretKey: string,
+        public encryptedSecretKey: string
     ) { }
 }
 
@@ -27,9 +28,9 @@ export class PartnerService implements IPartnerService, OnModuleInit {
         await this.updatePartnerListFromDB();
     }
 
-    getPartners(): Partner[] {
+    /* getPartners(): Partner[] {
         return Array.from(this.partners.values())
-    }
+    } */
 
     checkSecretKeyForPartner(partnerId: string, secretKeyProvided: string): boolean {
         const partner = this.partners.get(partnerId)
@@ -37,19 +38,22 @@ export class PartnerService implements IPartnerService, OnModuleInit {
             throw new NotFoundException("Partner id not found.")
         }
 
-        const sha256Hash = crypto.createHash('sha256');
-        sha256Hash.update(partner.secretKey)
-        const secretKeyEncoded = sha256Hash.digest('hex')
-
-        return secretKeyProvided == secretKeyEncoded
+        return secretKeyProvided == partner.encryptedSecretKey
     }
 
     private async updatePartnerListFromDB() {
         this.partners.clear()
         const rawDocs = await this.firestoreService.getCollection(getPartnerCollectionPath)
-        rawDocs.forEach((doc) => {
-            this.partners.set(doc.partnerId, new Partner(doc.partnerId, doc.secretKey))
+        rawDocs.forEach(async (doc) => {
+            const encryptedSecretKey = await this.encryptSecretKey(doc.secretKey)
+            this.partners.set(doc.partnerId, new Partner(doc.partnerId, doc.secretKey, encryptedSecretKey))
         })
+    }
+
+    private async encryptSecretKey(secretKey: string): Promise<string> {
+        const sha256Hash = crypto.createHash('sha256');
+        sha256Hash.update(secretKey)
+        return sha256Hash.digest('hex')
     }
 }
 
