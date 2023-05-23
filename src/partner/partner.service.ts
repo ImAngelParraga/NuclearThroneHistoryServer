@@ -48,7 +48,6 @@ export class PartnerService implements IPartnerService, OnModuleInit {
         this.partners.clear()
         const rawDocs = await this.firestoreService.getCollection(getPartnerCollectionPath)
         rawDocs.forEach((doc) => {
-            console.log(doc.id)
             this.partners.set(doc.partnerId, new Partner(doc.partnerId, doc.secretKey))
         })
     }
