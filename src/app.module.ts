@@ -6,6 +6,9 @@ import { NuclearRunResolver } from './graphql/graphql.resolver';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { NuclearRunModule } from './nuclear-run/nuclear-run.module';
 import { FirestoreModule } from './firestore/firestore.module';
+import { PartnerService } from './partner/partner.service';
+
+const partnerServiceProvider = { provide: 'IPartnerService', useClass: PartnerService}
 
 @Module({
   imports: [
@@ -17,6 +20,6 @@ import { FirestoreModule } from './firestore/firestore.module';
     FirestoreModule
   ],
   controllers: [AppController],
-  providers: [AppService, NuclearRunResolver],
+  providers: [AppService, NuclearRunResolver, partnerServiceProvider],
 })
 export class AppModule {}
