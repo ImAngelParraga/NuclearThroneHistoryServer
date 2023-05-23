@@ -52,3 +52,5 @@ export class PartnerService implements IPartnerService, OnModuleInit {
         })
     }
 }
+
+export const partnerServiceProvider = { provide: 'IPartnerService', useClass: PartnerService}

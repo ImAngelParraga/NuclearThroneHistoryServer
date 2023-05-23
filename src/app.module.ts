@@ -6,7 +6,6 @@ import { NuclearRunResolver } from './graphql/graphql.resolver';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { NuclearRunModule } from './nuclear-run/nuclear-run.module';
 import { FirestoreModule } from './firestore/firestore.module';
-import { PartnerService } from './partner/partner.service';
 
 @Module({
   imports: [
