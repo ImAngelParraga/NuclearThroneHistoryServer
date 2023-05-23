@@ -35,3 +35,9 @@ export class AuthorizationNotProvidedException extends BadRequestException {
         super('Authorization header was not provided.')
     }
 }
+
+export class RunIdNotProvidedException extends BadRequestException {
+    constructor() {
+        super('Run id was not provided.')
+    }
+}

@@ -11,6 +11,6 @@ const nuclearRunServiceProvider = { provide: 'INuclearRunService', useClass: Nuc
   imports: [FirestoreModule],
   controllers: [NuclearRunController],
   providers: [nuclearRunServiceProvider, NuclearRunApiService, partnerServiceProvider],
-  exports: [nuclearRunServiceProvider],
+  exports: [nuclearRunServiceProvider, partnerServiceProvider],
 })
 export class NuclearRunModule { }
