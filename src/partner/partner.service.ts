@@ -1,4 +1,4 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
 import { FirestoreService } from 'src/firestore/firestore.service';
 import { getPartnerCollectionPath } from 'src/firestore/firestorePaths';
 import * as crypto from 'crypto';
@@ -10,7 +10,7 @@ export interface IPartnerService {
 
 export class Partner {
     constructor(
-        public id: string,
+        public partnerId: string,
         public secretKey: string
     ) { }
 }
@@ -32,7 +32,11 @@ export class PartnerService implements IPartnerService, OnModuleInit {
     }
 
     checkSecretKeyForPartner(partnerId: string, secretKeyProvided: string): boolean {
-        const partner = this.partners.get(partnerId)!
+        const partner = this.partners.get(partnerId)
+        if (partner == undefined) {
+            throw new NotFoundException("Partner id not found.")
+        }
+
         const sha256Hash = crypto.createHash('sha256');
         sha256Hash.update(partner.secretKey)
         const secretKeyEncoded = sha256Hash.digest('hex')
@@ -42,9 +46,10 @@ export class PartnerService implements IPartnerService, OnModuleInit {
 
     private async updatePartnerListFromDB() {
         this.partners.clear()
-        const rawData = await this.firestoreService.getCollection(getPartnerCollectionPath)
-        rawData.forEach((data) => {
-            this.partners.set(data.id, new Partner(data.id, data.secretKey))
+        const rawDocs = await this.firestoreService.getCollection(getPartnerCollectionPath)
+        rawDocs.forEach((doc) => {
+            console.log(doc.id)
+            this.partners.set(doc.partnerId, new Partner(doc.partnerId, doc.secretKey))
         })
     }
 }

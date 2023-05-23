@@ -8,8 +8,6 @@ import { NuclearRunModule } from './nuclear-run/nuclear-run.module';
 import { FirestoreModule } from './firestore/firestore.module';
 import { PartnerService } from './partner/partner.service';
 
-const partnerServiceProvider = { provide: 'IPartnerService', useClass: PartnerService}
-
 @Module({
   imports: [
     GraphQLModule.forRoot<ApolloDriverConfig>({
@@ -20,6 +18,6 @@ const partnerServiceProvider = { provide: 'IPartnerService', useClass: PartnerSe
     FirestoreModule
   ],
   controllers: [AppController],
-  providers: [AppService, NuclearRunResolver, partnerServiceProvider],
+  providers: [AppService, NuclearRunResolver],
 })
 export class AppModule {}
