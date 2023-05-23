@@ -1,7 +1,8 @@
-import { Controller, Get, Inject, Param, Query } from '@nestjs/common';
+import { Controller, Get, Headers, Inject, Param, Query, UnauthorizedException } from '@nestjs/common';
 import { INuclearRunService } from './nuclear-run.service';
-import { NuclearRunEntity } from 'src/shared';
-import { KeyNotProvidedException, SteamIdNotProvidedException } from './nuclear-run-api/nuclear-run-api.errors';
+import { NuclearRunEntity, checkAuth } from 'src/shared';
+import { AuthorizationNotProvidedException, KeyNotProvidedException, PartnerIdNotProvidedException, SteamIdNotProvidedException } from './nuclear-run-api/nuclear-run-api.errors';
+import { IPartnerService } from 'src/partner/partner.service';
 
 export interface ApiResponse<T> {
   statusCode: number
@@ -11,10 +12,18 @@ export interface ApiResponse<T> {
 
 @Controller()
 export class NuclearRunController {
-  constructor(@Inject('INuclearRunService') private readonly nuclearRunService: INuclearRunService) { }
+  constructor(
+    @Inject('INuclearRunService') private readonly nuclearRunService: INuclearRunService,
+    @Inject('IPartnerService') private readonly partnerService: IPartnerService
+  ) { }
 
   @Get('save-user-run')
-  async saveLastNuclearRun(@Query('steamId') steamId: string, @Query('key') key: string): Promise<ApiResponse<NuclearRunEntity>> {
+  async saveLastNuclearRun(
+    @Query('steamId') steamId: string,
+    @Query('key') key: string,
+    @Headers('PartnerId') partnerId: string,
+    @Headers('Authorization') auth: string
+  ): Promise<ApiResponse<NuclearRunEntity>> {
     if (steamId == undefined) {
       throw new SteamIdNotProvidedException()
     }
@@ -22,6 +31,8 @@ export class NuclearRunController {
     if (key == undefined) {
       throw new KeyNotProvidedException()
     }
+
+    checkAuth(partnerId, auth, this.partnerService)
 
     const run = await this.nuclearRunService.saveLastRunForUser(steamId, key)
 
@@ -31,4 +42,5 @@ export class NuclearRunController {
       data: run
     }
   }
+
 }

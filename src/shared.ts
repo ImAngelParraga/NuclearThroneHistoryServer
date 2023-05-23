@@ -1,5 +1,8 @@
 import { NuclearRunType } from './graphql/graphql.schema';
 import { instanceToPlain, plainToInstance } from 'class-transformer';
+import { AuthorizationNotProvidedException, PartnerIdNotProvidedException } from './nuclear-run/nuclear-run-api/nuclear-run-api.errors';
+import { UnauthorizedException } from '@nestjs/common';
+import { IPartnerService } from './partner/partner.service';
 
 export class NuclearRun {
   id: string;
@@ -42,7 +45,7 @@ export class NuclearRunEntity {
     public health: number,
     public type: string,
     public runTimestamp: number,
-  ) {}
+  ) { }
 }
 
 export const nuclearRunEntityConverter = {
@@ -92,3 +95,17 @@ export const nuclearRunEntityConverter = {
     );
   },
 };
+
+export function checkAuth(partnerId: string, auth: string, partnerService: IPartnerService) {
+  if (partnerId == undefined) {
+    throw new PartnerIdNotProvidedException()
+  }
+
+  if (auth == undefined) {
+    throw new AuthorizationNotProvidedException()
+  }
+
+  if (!partnerService.checkSecretKeyForPartner(partnerId, auth)) {
+    throw new UnauthorizedException()
+  }
+}

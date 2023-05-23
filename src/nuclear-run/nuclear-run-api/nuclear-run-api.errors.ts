@@ -23,3 +23,21 @@ export class KeyNotProvidedException extends BadRequestException {
         super('Key was not provided.')
     }
 }
+
+export class PartnerIdNotProvidedException extends BadRequestException {
+    constructor() {
+        super('Partner ID was not provided.')
+    }
+}
+
+export class AuthorizationNotProvidedException extends BadRequestException {
+    constructor() {
+        super('Authorization header was not provided.')
+    }
+}
+
+export class RunIdNotProvidedException extends BadRequestException {
+    constructor() {
+        super('Run id was not provided.')
+    }
+}
